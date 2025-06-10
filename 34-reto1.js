@@ -36,7 +36,7 @@ const usersTimeline = [
   },
   {
     username: "Mariana",
-    timeline: "A mi me gusta mÃ¡s el cafÃ© que el tÃ©",
+    timeline: "A mi me gusta más el café que el té",
   },
   {
     username: "Andres",
@@ -51,7 +51,30 @@ const rl = readline.createInterface({
 
 rl.question('Usuario: ', function(usernameInput) {
     rl.question('Contraseña: ', function(passwordInput){
-        
-    })
+      
+      const itsValidated = validateUser(usernameInput, passwordInput);
 
+      if (itsValidated) {
+        console.log("Usuario y contraseña correctos.");
+        showTimeline(usernameInput);
+      } else {
+        console.log("Usuario o contraseña incorrectos.");
+      }
+      rl.close();
+    })
 })
+
+function validateUser(username, password) {
+  const user = usersDatabase.find(user => user.username === username && user.password === password);
+  return user ? true : false;
+}
+
+function showTimeline(username) {
+  const userTimeline = usersTimeline.find(user => user.username.toLowerCase() === username.toLowerCase());
+  if (userTimeline) {
+    console.log(`Bienvenido ${userTimeline.username}!`);
+    console.log(`Tu timeline: ${userTimeline.timeline}`);
+  } else {
+    console.log("No se encontró el timeline del usuario.");
+  }
+}
