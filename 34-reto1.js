@@ -1,3 +1,4 @@
+const { time } = require('console');
 const readline = require('readline');
 
 /* 
@@ -44,37 +45,35 @@ const usersTimeline = [
   },
 ];
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-rl.question('Usuario: ', function(usernameInput) {
-    rl.question('Contraseña: ', function(passwordInput){
-      
-      const itsValidated = validateUser(usernameInput, passwordInput);
-
-      if (itsValidated) {
-        console.log("Usuario y contraseña correctos.");
-        showTimeline(usernameInput);
-      } else {
-        console.log("Usuario o contraseña incorrectos.");
-      }
-      rl.close();
-    })
-})
-
-function validateUser(username, password) {
-  const user = usersDatabase.find(user => user.username === username && user.password === password);
-  return user ? true : false;
+function checkLogin(user, pass) {
+  return usersDatabase.find( (data) => data.username === user && data.password === pass)
 }
 
-function showTimeline(username) {
-  const userTimeline = usersTimeline.find(user => user.username.toLowerCase() === username.toLowerCase());
-  if (userTimeline) {
-    console.log(`Bienvenido ${userTimeline.username}!`);
-    console.log(`Tu timeline: ${userTimeline.timeline}`);
+function getTimeLine (user) {
+  const indexTimeLine = usersTimeline.findIndex((data) => data.username.toLowerCase() === user.toLowerCase());
+
+  if (indexTimeLine !== -1) {
+    return `Timeline: ${usersTimeline[indexTimeLine].timeline}`
   } else {
-    console.log("No se encontró el timeline del usuario.");
+    return `Timeline: --- Sin posts ---`
   }
 }
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+})
+
+rl.question('Usuario: ', (userName) =>{
+  rl.question('Contraseña: ', (password) => {
+    const itsLogin = checkLogin(userName, password);
+
+    if (!itsLogin) {
+      console.log('Nombre de usuario y/o contraseña incorrectos');
+    } else {
+      console.log(`Bienvenido(a) ${userName}`);
+      console.log(getTimeLine(userName));      
+    }
+    rl.close();
+  })
+})
